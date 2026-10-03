@@ -37,6 +37,6 @@ Running the notebook creates:
 
 Branch name: `branch_Sumin`
 
-Branch URL: To be added after pushing to GitHub.
+Branch URL: `https://github.com/04Shreya13/Stock_Movement_Context_Dashboard/tree/branch_Sumin`
 
-Commit ID: To be added after committing the final files.ㄴ
+Commit ID: `12a7edd`
