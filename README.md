@@ -4,10 +4,9 @@ This individual DSO 576 submission cleans Spotify Technology S.A. annual financi
 
 ## Submission identity
 
-- Student: **[YOUR NAME]**
-- GitHub branch: **[YOUR EXACT BRANCH NAME]**
-- Branch URL: **[YOUR BRANCH URL]**
-- Commit ID: **[YOUR SUBMITTED COMMIT ID]**
+- Student: **Haley Wong**
+- GitHub branch: **branch_haley**
+- Branch URL: **(https://github.com/04Shreya13/Stock_Movement_Context_Dashboard/tree/branch_haley)**
 
 These fields must also be completed in `reports/module_6_submission.pdf` before submission. This folder is not currently inside a Git repository, so they could not be inferred.
 
