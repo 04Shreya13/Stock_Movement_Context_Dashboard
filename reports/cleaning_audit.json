@@ -1,0 +1,54 @@
+{
+  "generated_at_utc": "2026-10-04T01:21:43Z",
+  "selected_source_rows": 152,
+  "exact_duplicate_source_rows": 0,
+  "eligible_annual_rows": 152,
+  "excluded_rows": 0,
+  "exclusions_by_reason": {},
+  "repeated_business_key_rows_removed": 91,
+  "groups_with_conflicting_values_across_filings": 0,
+  "final_rows": 61,
+  "unique_record_ids": 61,
+  "date_conversion_failures": 0,
+  "conversion_failure_details": [],
+  "missing_before": {
+    "period_start": 32,
+    "period_end": 0,
+    "value": 0,
+    "accession_number": 0,
+    "filed_date": 0,
+    "frame": 91
+  },
+  "missing_after": {
+    "record_id": 0,
+    "calendar_year": 0,
+    "metric": 0,
+    "value_eur": 0,
+    "unit": 0,
+    "period_start": 11,
+    "period_end": 0,
+    "fact_type": 0,
+    "form": 0,
+    "filed_date": 0,
+    "accession_number": 0,
+    "source_fiscal_year": 0,
+    "source_fiscal_period": 0
+  },
+  "cleaning_rules": [
+    "Select six IFRS concepts relevant to growth, profitability, cash generation, and liquidity.",
+    "Keep annual Form 20-F facts with fiscal period FY, EUR units, and a December 31 period end.",
+    "Require duration facts to span 365 or 366 days; instant cash facts legitimately have no start date.",
+    "For repeated metric/year/unit keys, retain the observation from the latest filing date.",
+    "Preserve negative profit values because losses are valid, not errors.",
+    "Standardize metric names to snake_case and units/forms to uppercase."
+  ],
+  "source_file": "spotify_companyfacts_2026-10-03.json",
+  "source_sha256": "cc022970e9b216233a25843b42f2a8a528dd92feb38500f9759c0109fccf84e0",
+  "entity_name": "Spotify Technology S.A.",
+  "cik": 1639920,
+  "year_range": [
+    2015,
+    2025
+  ],
+  "metric_count": 6
+}

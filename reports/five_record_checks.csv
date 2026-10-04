@@ -1,0 +1,6 @@
+record_id,original_value,expected_value,actual_value,reason,matches,source_accession
+2017-net_profit_loss-eur,-1235000000,-1235000000,-1235000000,negative loss must be preserved,True,0001564590-20-004357
+2021-operating_profit_loss-eur,94000000,94000000,94000000,first positive operating result in the series,True,0001639920-24-000004
+2022-operating_cash_flow-eur,46000000,46000000,46000000,unusually low but valid positive cash flow,True,0001639920-25-000003
+2024-cash_and_cash_equivalents-eur,4781000000,4781000000,4781000000,instant fact has no period_start,True,0001628280-26-006874
+2025-revenue-eur,17186000000,17186000000,17186000000,latest annual revenue and single filing context,True,0001628280-26-006874
