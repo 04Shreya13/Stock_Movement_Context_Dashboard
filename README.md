@@ -34,5 +34,5 @@ The script writes `cleaned_sample.csv` to the project directory.
 ## Git Submission Details
 
 - **Branch name:** `branch_Victor`
-- **Branch URL:** [To be added]
-- **Commit ID:** [To be added]
+- **Branch URL:** https://github.com/04Shreya13/Stock_Movement_Context_Dashboard/tree/branch_Victor
+- **Commit ID:** b8e658dacdf568b996f93cf4758dddccf8ef3677
