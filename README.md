@@ -16,7 +16,7 @@
 | Student | Shreya |
 | Branch | `cleaning-shreya` |
 | Branch URL | https://github.com/04Shreya13/Stock_Movement_Context_Dashboard/tree/cleaning-shreya |
-| Submitted commit | `COMMIT_ID_PENDING` |
+| Submitted commit | [`15eb47b`](https://github.com/04Shreya13/Stock_Movement_Context_Dashboard/commit/15eb47b741fbf2e5c8fceed5f522690ee8c24a35) (code and outputs; this README line was added in the next commit) |
 
 ---
 
