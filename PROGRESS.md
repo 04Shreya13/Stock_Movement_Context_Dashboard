@@ -10,6 +10,16 @@ Claude Code: read this at the start of every session and update it at the end of
 ## What exists so far
 - In the repo: cleaned data (4 parquet files in `data/cleaned/`), cleaning script (`src/dso576_python/cleaning.py`), decision log (`docs/cleaning_decision_log.md`), change log (`outputs/cleaning_changes.csv`), and sample files (`sample/`).
 
+## Phase 3 note: Grant's dashboard prototype
+Grant pushed a Streamlit prototype to main as `SHARE_DASHBOARD.zip` / `.tar.gz` (commits 65daf90, 166770b; both archives hold the same 9 files). It is Phase 3 material and is not extracted onto main. Issues found in a read-only review (2026-10-18), to fix before using it:
+- `app.py` imports `dso576_python.charts`, but `charts.py` sits at the archive root, so the app won't start as packaged.
+- `data_loader.py` imports `cleaning.py`, which the archive leaves out, so validation crashes on startup (`ModuleNotFoundError`, not caught by the app).
+- MD&A and risk text are shown in full; the agreed MVP shows the first ~2,000 characters with an expander for the rest.
+- The "refers to 10-K" quality label (`risk_refers_to_10k`) is never shown.
+- `$` signs: `st.markdown` treats text between two `$` as LaTeX math; all 73 MD&A texts and 824 news summaries contain 2+ `$` amounts, so text will likely garble (not run-tested).
+- `streamlit>=1.35` may be too low for `st.segmented_control` (unverified); its `requirements.txt` also pins pandas 2.2.3, conflicting with our pandas 3.0.6 environment.
+- Code is dense (long one-liners), not beginner-level per CLAUDE.md Section 5.
+
 ## Decisions made
 - Context, not causation: the tool never claims a news item or filing caused a price move.
 - Output is a shortlist for human follow-up.
