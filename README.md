@@ -259,7 +259,7 @@ rm -rf outputs/analysis && PYTHONPATH=src uv run python -m dso576_python.phase2
 
 > `PYTHONPATH=src` is needed because on macOS (e.g., an iCloud-synced Desktop) Python 3.13 ignores the hidden editable-install `.pth` file, so `dso576_python` can't be imported otherwise. On Windows PowerShell, run `$env:PYTHONPATH = "src"` once, then the same `uv run …` commands.
 
-`phase2` stops with an error if any canonical file is missing or fails validation. It writes `stock_summary_YEAR.csv`, `indexed_prices_YEAR.csv` and `flagged_days_YEAR.csv` for 2024–2026, AAPL example news, filing and cross-stock files, and `full_data_validation.json`.
+`phase2` stops with an error if any canonical file is missing or fails validation. It writes `stock_summary_PERIOD.csv`, `indexed_prices_PERIOD.csv` and `flagged_days_PERIOD.csv` for each period (`full`, 2024, 2025, 2026), AAPL example news, filing and cross-stock files for the default full-range view, and `full_data_validation.json`.
 
 ### Expected Output Files
 | File | Rows | SHA-256 (first 16) | In git? |

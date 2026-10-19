@@ -2,7 +2,7 @@
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from .analysis import COMPANIES
+from .constants import COMPANIES
 
 REQUIRED = {
     'prices': ['id', 'symbol', 'date', 'open', 'high', 'low', 'close', 'adj_close', 'volume', 'daily_range_pct'],

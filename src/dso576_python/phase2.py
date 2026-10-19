@@ -2,9 +2,10 @@
 import argparse
 import json
 from pathlib import Path
-from .analysis import (YEARS, COMPANIES, year_summary, indexed_prices,
+from .analysis import (COMPANIES, year_summary, indexed_prices,
                        flagged_days, initial_date, news_context, filing_context,
                        date_comparison, year_coverage)
+from .constants import FULL_RANGE, PERIODS
 from .data_loader import load_cleaned, validate_data
 
 
@@ -17,14 +18,15 @@ def main():
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
     reports = []
-    for year in YEARS:
-        year_summary(data['prices'], data['price_context'], year).to_csv(out / f'stock_summary_{year}.csv', index=False)
-        indexed_prices(data['prices'], year).to_csv(out / f'indexed_prices_{year}.csv', index=False)
-        flags = [flagged_days(data['price_context'], year, symbol) for symbol in COMPANIES]
+    for period in PERIODS:
+        year_summary(data['prices'], data['price_context'], period).to_csv(out / f'stock_summary_{period}.csv', index=False)
+        indexed_prices(data['prices'], period).to_csv(out / f'indexed_prices_{period}.csv', index=False)
+        flags = [flagged_days(data['price_context'], period, symbol) for symbol in COMPANIES]
         import pandas as pd
-        pd.concat(flags, ignore_index=True).to_csv(out / f'flagged_days_{year}.csv', index=False)
-        reports.append(year_coverage(data['prices'], year))
-    selected = initial_date(data['price_context'], 2025)
+        pd.concat(flags, ignore_index=True).to_csv(out / f'flagged_days_{period}.csv', index=False)
+        reports.append(year_coverage(data['prices'], period))
+    # Example context for the default view: full range, AAPL
+    selected = initial_date(data['price_context'], FULL_RANGE)
     if selected is not None:
         news_context(data['news'], 'AAPL', selected).to_csv(out / 'example_news_AAPL.csv', index=False)
         date_comparison(data['price_context'], selected).to_csv(out / 'example_cross_stock.csv', index=False)

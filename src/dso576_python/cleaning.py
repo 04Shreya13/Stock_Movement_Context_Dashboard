@@ -30,6 +30,8 @@ RAW_SHA256 = {
     "news": "1fd109796eada02af37a15178cc150ec252e7c02bc440c3f76641eb8fab6da25",
     "filings": "822a854865651e042c9d64288785efa0f2c0fecdec2a16016ff3c2e7a5601299",
 }
+# Mirrors constants.COMPANIES; kept here so this file still runs as a standalone script.
+# tests/test_analysis.py checks the two stay identical.
 TICKERS = {"AAPL", "ADBE", "AMZN", "GOOGL", "META", "MSFT", "NVDA", "TSLA"}
 DOCUMENT_TYPES = {"10-K", "10-Q"}
 LOW_INFO_HIGHLIGHT_CHARS = 300  # R5: shorter news summaries are broken or "no content" LLM output

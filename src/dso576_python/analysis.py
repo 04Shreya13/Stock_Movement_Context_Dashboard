@@ -5,17 +5,16 @@ are never modified. Full-sample flags are supplied by cleaning.py.
 """
 import pandas as pd
 
-COMPANIES = {
-    'AAPL': 'Apple', 'ADBE': 'Adobe', 'AMZN': 'Amazon', 'GOOGL': 'Alphabet',
-    'META': 'Meta', 'MSFT': 'Microsoft', 'NVDA': 'Nvidia', 'TSLA': 'Tesla',
-}
-YEARS = (2024, 2025, 2026)
+from .constants import COMPANIES, FULL_RANGE, PERIODS, YEARS  # noqa: F401 (re-exported)
 
 
-def _year(frame, year):
-    if year not in YEARS:
-        raise ValueError(f'Year must be one of {YEARS}')
-    return frame.loc[frame['date'].dt.year.eq(year)].copy()
+def _period(frame, period):
+    # 'full' keeps every row; a year keeps only that calendar year
+    if period not in PERIODS:
+        raise ValueError(f'Period must be one of {PERIODS}')
+    if period == FULL_RANGE:
+        return frame.copy()
+    return frame.loc[frame['date'].dt.year.eq(period)].copy()
 
 
 def _symbol(symbol):
@@ -23,31 +22,32 @@ def _symbol(symbol):
         raise ValueError(f'Unknown symbol: {symbol}')
 
 
-def year_coverage(prices, year):
-    frame = _year(prices, year)
+def year_coverage(prices, period):
+    frame = _period(prices, period)
     return {
-        'year': year, 'start_date': frame['date'].min(),
+        'period': period, 'start_date': frame['date'].min(),
         'end_date': frame['date'].max(), 'companies': frame['symbol'].nunique(),
         'trading_dates': frame['date'].nunique(),
-        'coverage_label': {2024: 'Partial year: December only',
+        'coverage_label': {FULL_RANGE: 'Full available range',
+                           2024: 'Partial year: December only',
                            2025: 'Full available year',
-                           2026: 'Partial year: January–March'}[year],
+                           2026: 'Partial year: January–March'}[period],
     }
 
 
-def indexed_prices(prices, year):
+def indexed_prices(prices, period):
     """Return ratios as decimals, except indexed_price (base 100)."""
-    frame = _year(prices, year).sort_values(['symbol', 'date'])
+    frame = _period(prices, period).sort_values(['symbol', 'date'])
     base = frame.groupby('symbol')['adj_close'].transform('first')
     frame['period_change'] = frame['adj_close'] / base - 1
     frame['indexed_price'] = (frame['period_change'] + 1) * 100
     return frame[['symbol', 'date', 'adj_close', 'indexed_price', 'period_change']].reset_index(drop=True)
 
 
-def year_summary(prices, context, year):
+def year_summary(prices, context, period):
     """One row per expected ticker, including explicit missing-data rows."""
-    p = _year(prices, year).sort_values(['symbol', 'date'])
-    c = _year(context, year)
+    p = _period(prices, period).sort_values(['symbol', 'date'])
+    c = _period(context, period)
     rows = []
     for symbol, company in COMPANIES.items():
         stock = p.loc[p['symbol'].eq(symbol)]
@@ -66,20 +66,20 @@ def year_summary(prices, context, year):
     return pd.DataFrame(rows).astype({'flagged_days': 'Int64'})
 
 
-def stock_series(context, year, symbol):
+def stock_series(context, period, symbol):
     _symbol(symbol)
-    frame = _year(context, year)
+    frame = _period(context, period)
     return frame.loc[frame['symbol'].eq(symbol)].sort_values('date').reset_index(drop=True)
 
 
-def flagged_days(context, year, symbol):
-    frame = stock_series(context, year, symbol)
+def flagged_days(context, period, symbol):
+    frame = stock_series(context, period, symbol)
     return frame.loc[frame['is_flagged']].sort_values(
         ['daily_range_pct', 'date'], ascending=[False, True]).reset_index(drop=True)
 
 
-def initial_date(context, year, symbol='AAPL'):
-    frame = flagged_days(context, year, symbol)
+def initial_date(context, period, symbol='AAPL'):
+    frame = flagged_days(context, period, symbol)
     return None if frame.empty else frame.iloc[0]['date']
 
 

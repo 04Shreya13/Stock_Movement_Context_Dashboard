@@ -6,6 +6,15 @@
 
 This replaces the package's earlier report, which was written without access to the data and could not run anything on it.
 
+## Update, 2026-10-19 (same machine, same `uv` environment)
+After adding the shared `constants.py` module and the full-range period (`period='full'`):
+- Tests: **11 of 11 passed** (two new: full-range period, ticker list consistent between `cleaning.py` and `constants.py`).
+- `phase2`: **exit 0**, strict validation passed, **16 files** written (the 13 below plus `stock_summary_full.csv`, `indexed_prices_full.csv`, `flagged_days_full.csv`).
+- Full range: every company has 17 flagged days; AAPL's largest is 2025-04-09 (range 14.44%, 8 of 8 stocks flagged), the default opening view.
+- `cleaning.py` still runs as a standalone script; `data/cleaned/`, `outputs/` and `sample/` remain byte-identical to `main`.
+
+The sections below are the original 2026-10-18 run.
+
 ## 1. Tests
 `PYTHONPATH=src uv run python -m unittest discover -s tests -v`: **9 of 9 passed.**
 The tests use small synthetic fixtures built in memory, so they check logic, not the real data.

@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 import pandas as pd
-from dso576_python.analysis import (COMPANIES, year_summary, indexed_prices,
+from dso576_python.analysis import (COMPANIES, year_coverage, year_summary, indexed_prices,
     flagged_days, initial_date, news_context, filing_context, date_comparison)
 from dso576_python.cleaning import clean_all, build_price_context
 from dso576_python.data_loader import validate_data, load_cleaned
@@ -113,6 +113,21 @@ class AnalysisTests(unittest.TestCase):
         small['daily_range_pct'] = .5
         result = flagged_days(small, 2025, 'AAPL')
         self.assertTrue(result.date.is_monotonic_increasing)
+
+
+    def test_full_range_period_keeps_all_years(self):
+        # 'full' is the default period: it spans every year in the data
+        full = flagged_days(self.c, 'full', 'AAPL')
+        self.assertEqual(len(full), int(self.c.loc[self.c.symbol.eq('AAPL'), 'is_flagged'].sum()))
+        self.assertEqual(year_summary(self.p, self.c, 'full').set_index('symbol').loc['AAPL', 'trading_days'], 5)
+        self.assertEqual(indexed_prices(self.p, 'full').groupby('symbol').indexed_price.first().eq(100).all(), True)
+        self.assertEqual(year_coverage(self.p, 'full')['coverage_label'], 'Full available range')
+        with self.assertRaises(ValueError):
+            flagged_days(self.c, 'everything', 'AAPL')
+
+    def test_ticker_list_defined_consistently(self):
+        from dso576_python.cleaning import TICKERS
+        self.assertEqual(TICKERS, set(COMPANIES))
 
 
 if __name__ == '__main__':
