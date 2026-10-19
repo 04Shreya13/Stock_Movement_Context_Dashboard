@@ -240,9 +240,42 @@ def build_sample(cleaned: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
     return {"price_context": context, "news": news_rows, "filings": filing_rows}
 
 
+def validate_raw(raw: dict[str, pd.DataFrame]) -> None:
+    """Reject invalid raw keys/types before the supplied deterministic cleaning."""
+    import numpy as np
+    required = {
+        "prices": ["id", "symbol", "date", "open", "high", "low", "close", "adj_close", "volume"],
+        "news": ["id", "symbol", "date", "highlights"],
+        "filings": ["id", "symbol", "date", "document_type", "mda_content", "risk_content"],
+    }
+    expected = {"prices": 2656, "news": 3888, "filings": 73}
+    for name, columns in required.items():
+        frame = raw[name]
+        if set(columns) - set(frame.columns) or len(frame) != expected[name]:
+            raise ValueError(f"{name}: unexpected pinned-source schema or row count")
+        if frame[columns].isna().any().any():
+            raise ValueError(f"{name}: missing raw values; reconcile before cleaning")
+        if frame["id"].duplicated().any():
+            raise ValueError(f"{name}: duplicate raw IDs")
+        dates = pd.to_datetime(frame["date"], errors="raise")
+        key = pd.DataFrame({"symbol": frame["symbol"].str.strip().str.upper(), "date": dates})
+        if set(key["symbol"]) != TICKERS or key.duplicated().any():
+            raise ValueError(f"{name}: unknown/missing ticker or ambiguous company/date key")
+    prices = raw["prices"]
+    values = prices[["open", "high", "low", "close", "adj_close", "volume"]]
+    if not all(pd.api.types.is_numeric_dtype(values[c]) for c in values) or not np.isfinite(values).all().all():
+        raise ValueError("prices: expected finite numeric values")
+    if (prices[["open", "high", "low", "close", "adj_close"]] <= 0).any().any() or (prices["volume"] < 0).any():
+        raise ValueError("prices: nonpositive price or negative volume")
+    if (prices["high"] < prices[["open", "close", "low"]].max(axis=1)).any() or (prices["low"] > prices[["open", "close", "high"]].min(axis=1)).any():
+        raise ValueError("prices: inconsistent OHLC")
+
+
 def main() -> None:
     verify_raw_files()
-    cleaned, changes = clean_all(load_raw())
+    raw = load_raw()
+    validate_raw(raw)
+    cleaned, changes = clean_all(raw)
     cleaned["price_context"] = build_price_context(cleaned)
     CLEAN_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
