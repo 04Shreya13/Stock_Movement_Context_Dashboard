@@ -9,9 +9,17 @@ wheels/
 # Virtual environments
 .venv
 
-# Raw data (download locally; never commit)
-data/
+# Data: data/raw/ stays local (download it; never commit).
+# data/cleaned/ is the team's canonical dataset, so it IS committed.
+# Git can't re-include a file inside an ignored folder, so ignore the
+# contents of data/ (data/*) instead of the folder itself (data/).
+data/*
+!data/cleaned/
 *.parquet
+!data/cleaned/*.parquet
+
+# Professor's phase briefs stay local (course materials; repo is public)
+phases/*.pdf
 
 # macOS
 .DS_Store

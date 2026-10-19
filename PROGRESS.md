@@ -1,22 +1,25 @@
-# Project Progress: Stock Movement Context Dashboard
+# Progress Log
 
-_Last updated: 2026-10-18_
+Claude Code: read this at the start of every session and update it at the end of every phase or major step.
 
-| Phase | Status |
-|-------|--------|
-| 1. Dataset cleaning | 🟡 In progress: Shreya's individual cleaning is merged to `main`; team reconciliation of the cleaning is **not done yet** |
-| 2. (name to be added by the team) | 🟡 In progress |
+## Current status
+- Phase 1 (vision write-up + usage example): done. Intended user: investor-relations analyst.
+- Phase 2 cleaning deliverable: done. The team adopted Shreya's cleaning (`data/cleaned/`, from branch `cleaning-shreya`) as the canonical dataset. Merged to main; push to the remote is pending.
+- Remaining Phase 2 work: BUILD_SPEC.md and the backend analysis code (brief in `phases/phase-2.pdf`).
 
-## Phase 1: Dataset cleaning
+## What exists so far
+- In the repo: cleaned data (4 parquet files in `data/cleaned/`), cleaning script (`src/dso576_python/cleaning.py`), decision log (`docs/cleaning_decision_log.md`), change log (`outputs/cleaning_changes.csv`), and sample files (`sample/`).
 
-**Merged to `main`:** Shreya's individual dataset cleaning (Module 6 homework) from branch `cleaning-shreya`.
-- Code: `src/dso576_python/cleaning.py`
-- Evidence notebook: `data_cleaning.ipynb`
-- Rules, record checks, and limitations: `docs/cleaning_decision_log.md`
-- Run: `uv run python src/dso576_python/cleaning.py` (raw data goes in `data/raw/`; see README)
+## Decisions made
+- Context, not causation: the tool never claims a news item or filing caused a price move.
+- Output is a shortlist for human follow-up.
+- Python only; beginner-level code for team readability; no paid APIs.
 
-**Not done yet:** team reconciliation of the cleaning. Teammates' cleaning work is on their own branches and has not yet been compared or combined into one agreed version.
+## Open questions
+- Whether the course requires anything specific about the "live tool" format (check the phase brief).
 
-## Phase 2 (name to be added by the team)
-
-In progress.
+## Phase history
+| Phase | Brief | Status | Notes |
+|-------|-------|--------|-------|
+| 1 | vision + usage example | Done | |
+| 2 | `phases/phase-2.pdf` | In progress | Cleaning deliverable done (Shreya's cleaning adopted as canonical). Remaining: BUILD_SPEC.md, backend analysis code. |
