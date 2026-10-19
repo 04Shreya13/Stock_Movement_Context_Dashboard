@@ -18,6 +18,16 @@ data/*
 *.parquet
 !data/cleaned/*.parquet
 
+# Backend exports are regenerated on demand (see README "Phase 2 backend")
+outputs/analysis/
+
+# Local secrets (e.g. HF_TOKEN) never get committed
+.env
+.env.*
+
+# Teammates' unpacked review packages stay local
+drafts/
+
 # Professor's phase briefs stay local (course materials; repo is public)
 phases/*.pdf
 

@@ -163,7 +163,7 @@ erDiagram
 - **prices → prices:** same `date` across all 8 symbols → `co_flag_count`.
 
 ### ⚠️ Raw Data Is Not Committed
-Raw and cleaned Parquet files are **never committed**. `.gitignore` excludes `data/` and `*.parquet`. Only the 50-row CSV sample in `sample/` is in the repository.
+Raw Parquet files in `data/raw/` are **never committed** (`.gitignore` excludes them). The team's canonical cleaned data in `data/cleaned/` **is** committed, along with the 50-row CSV sample in `sample/`.
 
 ---
 
@@ -182,10 +182,9 @@ Raw and cleaned Parquet files are **never committed**. `.gitignore` excludes `da
 
 ### Installation
 ```bash
-# 1. Clone the repository and switch to this branch
+# 1. Clone the repository
 git clone https://github.com/04Shreya13/Stock_Movement_Context_Dashboard.git
 cd Stock_Movement_Context_Dashboard
-git checkout cleaning-shreya
 
 # 2a. Recommended: uv (reads .python-version, installs Python 3.13 if needed)
 uv sync
@@ -196,14 +195,23 @@ pip install -r requirements.txt
 ```
 
 ### Getting the Data (pinned version)
-```bash
-mkdir -p data/raw
-for t in prices news filings; do
-  curl -L -o data/raw/$t.parquet \
-    "https://huggingface.co/datasets/TheFinAI/Herculean/resolve/52d3ecb97e490a2392717935402cde283e8fa36e/data/$t.parquet"
-done
-shasum -a 256 data/raw/*.parquet   # must match the hashes below; the script also checks this
-```
+**Most teammates don't need this.** The canonical cleaned data is already committed in `data/cleaned/`. You only need the raw files to rerun the cleaning.
+
+**The dataset is gated (since 2026-10-08).** Downloads without your own Hugging Face login return HTTP 401. Each teammate needs their own account and token:
+
+1. Create a Hugging Face account, open the [dataset page](https://huggingface.co/datasets/TheFinAI/Herculean) and accept its access conditions.
+2. Create a **read** access token in your Hugging Face settings (Access Tokens).
+3. Make it available as the environment variable `HF_TOKEN` in your own terminal only. **Never commit it, paste it into code or notebooks, or save it in a file inside the repo.** (`.gitignore` blocks `.env` files as a safety net.) This prompts for it without echoing it or saving it in shell history:
+   ```bash
+   read -s HF_TOKEN && export HF_TOKEN
+   ```
+4. Download the three raw files:
+   ```bash
+   uv run python scripts/download_source.py
+   ```
+   The script downloads only `prices`, `news` and `filings` at the pinned revision into `data/raw/`, checks each SHA-256 against the table below, and refuses any file that doesn't match. It never prints the token.
+
+**Version note:** we use the pinned revision `52d3ecb97e490a2392717935402cde283e8fa36e`. The dataset repo has since moved on to `16b87963c31c4ba02b60efd27efdcc824b8cee01` (2026-10-08). Stay on the pinned revision: switching would require regenerating and revalidating every output.
 
 | File | SHA-256 |
 |------|---------|
@@ -235,13 +243,31 @@ uv run jupyter nbconvert --to notebook --execute --inplace data_cleaning.ipynb
 | 3 | `data_cleaning.ipynb` | Phase 1 inspection → Phase 2 cleaning → Phase 3 validation (incl. 5 record checks) → Phase 4 outputs |
 | 4 | `docs/cleaning_decision_log.md` | Every rule with its reason and check, record checks, and limitations |
 
+### Phase 2 backend
+The backend reads the committed `data/cleaned/` files, so no download is needed. Run from the project root:
+
+```bash
+# Run the tests (synthetic fixtures; no data needed)
+PYTHONPATH=src uv run python -m unittest discover -s tests -v
+
+# Validate the full cleaned data and export the dashboard tables to outputs/analysis/
+PYTHONPATH=src uv run python -m dso576_python.phase2
+
+# Regenerate outputs/analysis/ from scratch (it is git-ignored; rerun after any data or code change)
+rm -rf outputs/analysis && PYTHONPATH=src uv run python -m dso576_python.phase2
+```
+
+> `PYTHONPATH=src` is needed because on macOS (e.g., an iCloud-synced Desktop) Python 3.13 ignores the hidden editable-install `.pth` file, so `dso576_python` can't be imported otherwise. On Windows PowerShell, run `$env:PYTHONPATH = "src"` once, then the same `uv run …` commands.
+
+`phase2` stops with an error if any canonical file is missing or fails validation. It writes `stock_summary_YEAR.csv`, `indexed_prices_YEAR.csv` and `flagged_days_YEAR.csv` for 2024–2026, AAPL example news, filing and cross-stock files, and `full_data_validation.json`.
+
 ### Expected Output Files
 | File | Rows | SHA-256 (first 16) | In git? |
 |------|------|--------------------|---------|
-| `data/cleaned/prices.parquet` | 2,656 | `b463e96a262bf2a7` | No |
-| `data/cleaned/news.parquet` | 3,888 | `7cf7dfeee7289326` | No |
-| `data/cleaned/filings.parquet` | 73 | `0f2d1ca5868011c4` | No |
-| `data/cleaned/price_context.parquet` | 2,656 | `872060d0ae73cafa` | No |
+| `data/cleaned/prices.parquet` | 2,656 | `b463e96a262bf2a7` | Yes |
+| `data/cleaned/news.parquet` | 3,888 | `7cf7dfeee7289326` | Yes |
+| `data/cleaned/filings.parquet` | 73 | `0f2d1ca5868011c4` | Yes |
+| `data/cleaned/price_context.parquet` | 2,656 | `872060d0ae73cafa` | Yes |
 | `outputs/cleaning_changes.csv` | 12 | `efa4f4169d1d6c2f` | Yes |
 | `sample/price_context_sample.csv` | 40 | `c54148844fc2747c` | Yes |
 | `sample/news_sample.csv` | 5 | `dada9f8dede493ec` | Yes |
@@ -269,8 +295,10 @@ Stock_Movement_Context_Dashboard/
 ├── pyproject.toml / uv.lock                      # Dependencies (uv)
 ├── requirements.txt                              # Same dependencies for pip (uv export)
 ├── .python-version                               # Python 3.13
-├── .gitignore                                    # Excludes data/, *.parquet, .venv, .DS_Store
+├── .gitignore                                    # Excludes data/raw/, .venv, .env, drafts/, .DS_Store
 ├── data_cleaning.ipynb                           # Evidence notebook (Phases 1–4)
+├── scripts/
+│   └── download_source.py                        # Pinned, checksum-verified raw download (needs HF_TOKEN)
 ├── docs/
 │   └── cleaning_decision_log.md                  # Rules, reasons, checks, record checks, limitations
 ├── src/
@@ -283,9 +311,9 @@ Stock_Movement_Context_Dashboard/
 │   ├── price_context_sample.csv
 │   ├── news_sample.csv
 │   └── filings_sample.csv
-└── data/                                         # (git-ignored)
-    ├── raw/                                      # Original Parquet files
-    └── cleaned/                                  # Cleaned Parquet outputs
+└── data/
+    ├── raw/                                      # Original Parquet files (git-ignored)
+    └── cleaned/                                  # Canonical cleaned Parquet files (committed)
 ```
 
 ---
