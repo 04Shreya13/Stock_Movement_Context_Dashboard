@@ -2,16 +2,19 @@
 
 ## 1. Vision and decision
 An investor-relations analyst at a large investment firm needs to explain unusual
-stock movements before speaking with investors. The dashboard brings eight
-companies' prices, nearby news, and the latest company filings into one workflow,
-replacing switching between separate charts, news feeds, and filing documents.
+stock movements before speaking with investors. Today, for each move, the analyst
+finds the wide day on a separate price chart, then searches a news site and the
+SEC filing site for that date one company at a time; with the dashboard, they pick
+a stock, see its unusually wide days ranked, and open one day to see that week's
+news summaries and the filing in effect on that day side by side.
 The analyst decides which movements and disclosures deserve further human review.
 The tool supplies historical context, not causal conclusions, forecasts, or
 trading advice.
 
 Changes from Phase 1: a period selector (full range by default, with year options)
-and an eight-stock overview were added; the threshold is fixed for the MVP
-(Phase 1's adjustable threshold was removed).
+and an eight-stock overview were added. The selector replaces year tabs because
+2024 is December only (21 trading days), too short to stand alone as a tab. The
+threshold is fixed for the MVP (Phase 1's adjustable threshold was removed).
 
 | User selects | Dashboard shows | User decides |
 |---|---|---|
