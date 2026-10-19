@@ -4,7 +4,7 @@ Claude Code: read this at the start of every session and update it at the end of
 
 ## Current status
 - Phase 1 (vision write-up + usage example): done. Intended user: investor-relations analyst.
-- Phase 2 cleaning deliverable: done. The team adopted Shreya's cleaning (`data/cleaned/`, from branch `cleaning-shreya`) as the canonical dataset. Merged to main; push to the remote is pending.
+- Phase 2 cleaning deliverable: done. The team adopted Shreya's cleaning (`data/cleaned/`, from branch `cleaning-shreya`) as the canonical dataset. Merged and pushed to main on GitHub (commit 2be2e40).
 - Remaining Phase 2 work: BUILD_SPEC.md and the backend analysis code (brief in `phases/phase-2.pdf`).
 
 ## What exists so far
