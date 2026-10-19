@@ -4,8 +4,11 @@ Claude Code: read this at the start of every session and update it at the end of
 
 ## Current status
 - Phase 1 (vision write-up + usage example): done. Intended user: investor-relations analyst.
-- Phase 2 cleaning deliverable: done. The team adopted Shreya's cleaning (`data/cleaned/`, from branch `cleaning-shreya`) as the canonical dataset. Merged and pushed to main on GitHub (commit 2be2e40).
-- Remaining Phase 2 work: BUILD_SPEC.md and the backend analysis code (brief in `phases/phase-2.pdf`).
+- Phase 2 (brief in `phases/phase-2.pdf`): cleaning, spec and backend are done and merged to main (merge commit 29b0e7f, from branch `phase2-integration`).
+  - Cleaning: the team adopted Shreya's cleaning (`data/cleaned/`) as the canonical dataset; comparison in `docs/team_reconciliation.md`.
+  - Spec: `BUILD_SPEC.md` (full-range period selector by default, fixed per-company 95th-percentile flag).
+  - Backend: `src/dso576_python/` (analysis, data_loader, phase2, constants); 11 tests pass and full-data validation passes on main.
+- **Phase 2 is not yet complete.** The fresh-agent test is NOT yet done (not run or recorded; see `docs/SUBMISSION_CHECKLIST.md`).
 
 ## What exists so far
 - In the repo: cleaned data (4 parquet files in `data/cleaned/`), cleaning script (`src/dso576_python/cleaning.py`), decision log (`docs/cleaning_decision_log.md`), change log (`outputs/cleaning_changes.csv`), and sample files (`sample/`).
@@ -32,4 +35,4 @@ Grant pushed a Streamlit prototype to main as `SHARE_DASHBOARD.zip` / `.tar.gz` 
 | Phase | Brief | Status | Notes |
 |-------|-------|--------|-------|
 | 1 | vision + usage example | Done | |
-| 2 | `phases/phase-2.pdf` | In progress | Cleaning deliverable done (Shreya's cleaning adopted as canonical). Remaining: BUILD_SPEC.md, backend analysis code. |
+| 2 | `phases/phase-2.pdf` | In progress | Cleaning, spec and backend done (merge 29b0e7f). Remaining: fresh-agent test. |
