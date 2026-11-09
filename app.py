@@ -14,7 +14,8 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parent / 'web'
     types = {'index.html': 'text/html', 'style.css': 'text/css',
-             'app.js': 'text/javascript', 'data.js': 'text/javascript',
+             'app.js': 'text/javascript', 'charts.js': 'text/javascript',
+             'data.js': 'text/javascript',
              'summaries.js': 'text/javascript'}
     assets = {}
     for name, content_type in types.items():

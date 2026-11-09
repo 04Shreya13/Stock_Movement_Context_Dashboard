@@ -1,14 +1,197 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stock Context — Movement Research</title><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stock Movement Context Dashboard</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<aside><a class="brand" href="index.html"><span class="logo">↗</span> STOCK<span>CONTEXT</span></a><div class="workspace">RESEARCH WORKSPACE</div><button class="nav active" id="overviewNav">▦ &nbsp; Movement explorer</button><button class="nav" id="shortlistNav">☆ &nbsp; Review shortlist <span id="savedCount">0</span></button><div class="side-bottom"><span class="status-dot"></span> Historical dataset<br><small>Dec 2024 – Mar 2026</small><button id="methodBtn">ⓘ &nbsp; Data & methodology</button></div></aside>
-<main><header><div><span class="eyebrow">MEGA-8 / MOVEMENT RESEARCH</span><h1>Every movement has context.</h1><p>Explore price fluctuations alongside company news and SEC filings.</p></div><button id="exportBtn" class="outline">↓ Export shortlist</button></header>
-<div class="notice"><span>●</span><div><b>Historical research workspace</b> · Real records from the team's cleaned Herculean dataset. News highlights are AI summaries. Context suggests leads for review; it does not establish causation.</div><button id="aboutBtn">About the data ↗</button></div>
-<section class="filterbar"><label>COMPANY<select id="company"></select></label><label>YEAR<select id="year"><option value="all">All years</option><option>2026</option><option selected>2025</option><option>2024</option></select></label><label>UNUSUAL RANGE<select id="threshold"><option value="5">Top 5% per company</option><option value="10">Top 10% per company</option><option value="all">All trading days</option></select></label><div class="filter-info">Range = (high − low) ÷ close<br><small>Threshold uses each company’s full history</small></div></section>
-<div id="explorer"><section class="companies" id="companyCards"></section>
-<section class="section-title"><div><span class="eyebrow">01 / PRICE MOVEMENT</span><h2 id="chartTitle"></h2></div><span id="coverage" class="muted"></span></section>
-<section class="chart-panel"><div class="chart-top"><div><span class="muted">Selected day close</span><div class="price" id="selectedPrice"></div><div id="selectedDate" class="muted"></div></div><div class="chart-metric"><span class="muted">Daily range</span><b id="rangeMetric"></b></div><div class="chart-metric"><span class="muted">Companies flagged that day</span><b id="coMetric"></b></div><div class="chart-controls"><button class="selected" data-mode="close">Close price</button><button data-mode="range">Daily range %</button></div></div><div class="legend"><span class="teal">━ Close price</span><span class="orange">● Flagged day</span><span>│ Selected day</span></div><div id="chart" tabindex="0" aria-label="Interactive price chart"></div><p class="chart-hint">Select a point to inspect that trading day. Hover or focus a point for values.</p></section>
-<section class="research-grid"><div class="events panel"><div class="panel-heading"><div><span class="eyebrow">02 / FIND A MOVEMENT</span><h2>Days to investigate <span id="eventCount"></span></h2></div><span class="tag">Largest range first</span></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Range %</th><th>High − low</th><th>Co-flags</th></tr></thead><tbody id="eventRows"></tbody></table></div></div><div class="context panel"><div class="panel-heading"><div><span class="eyebrow">03 / CONNECT THE CONTEXT</span><h2 id="contextTitle"></h2></div><button id="saveBtn" class="outline">☆ Shortlist</button></div><div id="selectedFacts"></div><div class="tabs"><button data-tab="news" class="selected">Nearby news</button><button data-tab="filing">SEC filings</button></div><div id="newsPanel"></div><div id="filingPanel" hidden></div></div></section></div>
-<section id="shortlistView" hidden><div class="section-title"><div><span class="eyebrow">YOUR RESEARCH</span><h2>Review shortlist</h2></div><span class="muted">Saved in this browser</span></div><div id="shortlistItems"></div></section>
-<footer><span>STOCK CONTEXT <small> / Built for human follow-up</small></span><a href="https://github.com/04Shreya13/Stock_Movement_Context_Dashboard" target="_blank" rel="noreferrer">Project source ↗</a><a href="https://huggingface.co/datasets/TheFinAI/Herculean" target="_blank" rel="noreferrer">Herculean dataset ↗</a></footer>
-</main><dialog id="methodDialog"><button id="closeDialog" class="dialog-close" aria-label="Close">×</button><span class="eyebrow">DATA & METHODOLOGY</span><h2>Research with the full context.</h2><p>This site implements the workflow described in DSO-576.pdf using the public project repository’s cleaned tables: 2,656 daily price records, 3,888 news summaries, and 73 filing excerpts across eight companies.</p><h3>What gets flagged?</h3><p>Daily range is (high − low) ÷ close × 100. Top 5% uses the 95th percentile of each company’s full available history (linear interpolation), before filtering by year. This makes volatility comparable across stocks with different price levels. A wide range is not the same as a large close-to-close return.</p><h3>How context is matched</h3><p>News covers the selected calendar day and previous seven calendar days. Filings use the latest dated record on or before the selection, including earlier years. Same-day filings may have been released after trading hours. If a quarterly risk section refers to a 10-K, the latest available annual report is also shown.</p><h3>Quick summaries</h3><p>Quick takeaways automatically select a few complete sentences from the dataset text, grouped by topic. They are extractive summaries, rather than independently verified analysis, and may omit important context. Expand the full dataset text to review the source. A missing topic means no suitable sentence was found, not that the topic is absent.</p><h3>Coverage & limits</h3><p>Prices and news span December 2024 through March 2026; some years are partial. News is AI-summarized and may contain errors; original article URLs are not supplied. Filings contain MD&A and risk excerpts, rather than complete SEC documents. Co-flags are a partial check for shared movements, not proof of a market-wide cause. Prices shown are unadjusted OHLC values; corporate actions can affect comparisons.</p><p>Shortlists stay in this browser. Export them to retain a copy. This research tool provides neither predictions nor investment recommendations.</p><p>Source: <a href="https://huggingface.co/datasets/TheFinAI/Herculean">The Fin AI / Herculean</a>, CC BY 4.0, via the <a href="https://github.com/04Shreya13/Stock_Movement_Context_Dashboard">team’s cleaned dataset</a>. No live market feed is connected.</p></dialog><div role="status" id="toast"></div><script src="data.js"></script><script src="summaries.js"></script><script src="app.js"></script></body></html>
+
+<aside>
+  <a class="brand" href="index.html"><span class="logo">↗</span> STOCK<span>CONTEXT</span></a>
+  <div class="workspace">RESEARCH WORKSPACE</div>
+  <button class="nav active" id="overviewNav">▦ &nbsp; Movement explorer</button>
+  <button class="nav" id="shortlistNav">☆ &nbsp; Review shortlist <span id="savedCount">0</span></button>
+  <div class="side-bottom">
+    <span class="status-dot"></span> Historical dataset<br>
+    <small>Dec 2024 – Mar 2026</small>
+    <button id="methodBtn">ⓘ &nbsp; Data &amp; methodology</button>
+  </div>
+</aside>
+
+<main>
+  <header>
+    <div>
+      <span class="eyebrow">MEGA-8 / MOVEMENT RESEARCH</span>
+      <h1>Stock Movement Context Dashboard</h1>
+      <p>Compare eight stocks, identify unusually wide daily ranges, and review related news and company filings.</p>
+    </div>
+    <button id="exportBtn" class="outline">↓ Export shortlist</button>
+  </header>
+
+  <div class="notice">
+    <span>●</span>
+    <div><b>Context, not causation</b> · Historical records only. News highlights are AI summaries. Nothing here proves why a stock moved, predicts prices, or gives trading advice.</div>
+    <button id="aboutBtn">About the data ↗</button>
+  </div>
+
+  <div id="filters">
+    <section class="filterbar">
+      <label>PERIOD
+        <select id="period">
+          <option value="full">Full range</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+        </select>
+      </label>
+      <label>SELECT A STOCK TO INVESTIGATE
+        <select id="stock"></select>
+      </label>
+      <div class="filter-info">
+        Daily range = (high − low) ÷ close<br>
+        <small>Flagged = top 5% of that company's own days</small>
+      </div>
+    </section>
+    <p id="coverage" class="coverage"></p>
+  </div>
+
+  <div id="loading" class="panel empty">Loading the dataset…</div>
+
+  <div id="explorer" hidden>
+
+    <section class="section-title">
+      <div>
+        <span class="eyebrow">01 / COMPARE ALL EIGHT</span>
+        <h2>Relative price performance — first trading day of period = 100</h2>
+      </div>
+    </section>
+    <section class="chart-panel">
+      <div class="legend-row" id="relativeLegend"></div>
+      <div id="relativeChart" class="chart-box"></div>
+      <p class="chart-hint">Hover to compare values on one date. Click a name above to hide or show its line; this changes the chart only.</p>
+    </section>
+    <section class="panel summary-panel">
+      <div class="table-wrap">
+        <table id="summaryTable">
+          <thead id="summaryHead"></thead>
+          <tbody id="summaryRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section-title">
+      <div>
+        <span class="eyebrow">02 / PICK A STOCK</span>
+        <h2 id="chartTitle"></h2>
+      </div>
+      <span id="stockCoverage" class="muted"></span>
+    </section>
+    <section class="companies" id="companyCards"></section>
+    <section class="chart-panel detail-panel">
+      <div class="chart-top">
+        <div>
+          <span class="muted">Selected day close</span>
+          <div class="price" id="selectedPrice"></div>
+          <div id="selectedDate" class="muted"></div>
+        </div>
+        <div class="chart-metric"><span class="muted">Daily range</span><b id="rangeMetric"></b></div>
+        <div class="chart-metric"><span class="muted">Stocks flagged that day</span><b id="coMetric"></b></div>
+        <div class="chart-controls">
+          <button class="selected" data-mode="close">Close price</button>
+          <button data-mode="range">Daily range %</button>
+        </div>
+      </div>
+      <div class="legend-row static">
+        <span class="legend-key"><i class="key-line teal-line"></i><span id="detailSeriesName">Close price</span></span>
+        <span class="legend-key"><i class="key-dot"></i>Flagged day</span>
+        <span class="legend-key"><i class="key-selected"></i>Selected day</span>
+      </div>
+      <div id="detailChart" class="chart-box"></div>
+      <p class="chart-hint">Click anywhere on the chart to inspect the nearest trading day. Hover for values.</p>
+    </section>
+
+    <section class="research-grid">
+      <div class="events panel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">03 / FIND A MOVEMENT</span>
+            <h2>Days to investigate <span id="eventCount"></span></h2>
+          </div>
+          <span class="tag">Largest range first</span>
+        </div>
+        <p class="data-note flag-caption">Unusual compared with this stock's full Dec 2024–Mar 2026 history, including later days; not a real-time signal.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th class="num">Close</th><th class="num">High</th><th class="num">Low</th><th class="num">Range</th><th class="num">Co-flags</th></tr></thead>
+            <tbody id="eventRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="context panel" id="contextPanel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">04 / CONNECT THE CONTEXT</span>
+            <h2 id="contextTitle"></h2>
+          </div>
+          <button id="saveBtn" class="outline">☆ Shortlist</button>
+        </div>
+        <div id="selectedFacts"></div>
+        <div class="compare">
+          <h3 id="compareTitle"></h3>
+          <div id="compareRows" class="compare-rows"></div>
+          <p class="data-note">A higher count may suggest shared conditions; it does not establish a market-wide cause.</p>
+        </div>
+        <div class="tabs">
+          <button data-tab="news" class="selected">Nearby news</button>
+          <button data-tab="filing">SEC filing</button>
+        </div>
+        <div id="newsPanel"></div>
+        <div id="filingPanel" hidden></div>
+      </div>
+    </section>
+  </div>
+
+  <section id="shortlistView" hidden>
+    <div class="section-title">
+      <div><span class="eyebrow">YOUR RESEARCH</span><h2>Review shortlist</h2></div>
+      <span class="muted">Saved in this browser only. Export to keep a copy.</span>
+    </div>
+    <div id="shortlistItems"></div>
+  </section>
+
+  <footer>
+    <span>STOCK CONTEXT <small> / Built for human follow-up</small></span>
+    <a href="https://github.com/04Shreya13/Stock_Movement_Context_Dashboard" target="_blank" rel="noreferrer">Project source ↗</a>
+    <a href="https://huggingface.co/datasets/TheFinAI/Herculean" target="_blank" rel="noreferrer">Herculean dataset ↗</a>
+  </footer>
+</main>
+
+<dialog id="methodDialog">
+  <button id="closeDialog" class="dialog-close" aria-label="Close">×</button>
+  <span class="eyebrow">DATA &amp; METHODOLOGY</span>
+  <h2>How to read this dashboard</h2>
+  <p>The full cleaned Herculean tables are used, with no sampling: 2,656 daily price records, 3,888 news summaries and 73 filing excerpts for eight companies, December 2024 to March 2026. Every figure comes from the project's tested Python backend.</p>
+  <h3>What gets flagged?</h3>
+  <p>Daily range is (high − low) ÷ close. A day is flagged when its range is at or above the 95th percentile of that company's own full history (linear interpolation). That gives 17 flagged days per company. The cutoff is fixed: changing the period never changes which days are flagged. Because it uses the full history, including later days, it is a look back and not a real-time signal. A wide range is not the same as a large close-to-close return.</p>
+  <h3>How context is matched</h3>
+  <p>News covers the selected calendar day and the previous seven calendar days. The filing is the latest one dated on or before the selected day, which can be weeks or months old, so its age is shown. A same-day filing may have been released after trading hours. If a quarterly risk section is labelled "refers to 10-K", the latest annual report's risks are also shown.</p>
+  <h3>Selected sentences</h3>
+  <p>The highlighted sentences are picked automatically from the source text by topic keywords. They are not a summary and are not verified, and they may leave out important context. Open the full text to review the source. A missing topic means no suitable sentence was found, not that the topic is absent.</p>
+  <h3>Limits</h3>
+  <p>There is no market index, so co-flags are only a partial check for shared movement. News is AI-summarized, may contain errors, and has no publication times or article links. Filings are MD&amp;A and risk excerpts, not complete documents. Relative performance uses adjusted prices; the close, high and low shown are unadjusted. This tool gives neither predictions nor investment recommendations.</p>
+  <p>Source: <a href="https://huggingface.co/datasets/TheFinAI/Herculean">TheFinAI / Herculean</a>, CC BY 4.0, via the <a href="https://github.com/04Shreya13/Stock_Movement_Context_Dashboard">team's cleaned dataset</a>. No live market feed is connected.</p>
+</dialog>
+
+<div role="status" id="toast"></div>
+<div id="chartTooltip" hidden></div>
+
+<script src="data.js"></script>
+<script src="summaries.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

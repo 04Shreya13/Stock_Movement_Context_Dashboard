@@ -18,7 +18,7 @@ data/*
 *.parquet
 !data/cleaned/*.parquet
 
-# Backend exports are regenerated on demand (see README "Phase 2 backend")
+# Backend exports are regenerated on demand (see docs/data_and_pipeline.md "Phase 2 backend")
 outputs/analysis/
 
 # Local secrets (e.g. HF_TOKEN) never get committed
@@ -30,6 +30,9 @@ drafts/
 
 # Professor's phase briefs stay local (course materials; repo is public)
 phases/*.pdf
+
+# Personal course submissions stay local
+my-audit.md
 
 # macOS
 .DS_Store
