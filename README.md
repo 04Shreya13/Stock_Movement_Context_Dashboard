@@ -23,6 +23,10 @@ An **investor-relations analyst** at a large investment firm has to explain unus
 
 **Key measure:** daily range = (high − low) ÷ close, as a percentage of the closing price. A day is flagged when its range is in that company's top 5%.
 
+## Video Demonstration
+Product Video Demonstration Link:
+https://drive.google.com/file/d/1LE_wqrYsOmughFZQcsRuLhHJUFQ3D0jD/view?usp=sharing
+
 ## Run it locally
 You only need Python 3. From the project root:
 
