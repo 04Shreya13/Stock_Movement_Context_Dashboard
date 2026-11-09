@@ -15,13 +15,16 @@ Changes from Phase 1: a period selector (full range by default, with year option
 and an eight-stock overview were added. The selector replaces year tabs because
 2024 is December only (21 trading days), too short to stand alone as a tab. The
 threshold is fixed for the MVP (Phase 1's adjustable threshold was removed).
+Phase 3 added a static HTML front end, a shortlist with CSV export, and
+automatically selected sentences from the news and filing text.
 
 | User selects | Dashboard shows | User decides |
 |---|---|---|
 | Period (default: full range) | Eight-stock relative price chart and summary table | Which stock deserves investigation |
 | Stock | Closing-price chart and ranked flagged days | Which event to review |
 | Flagged day | Day metrics, eight-stock same-date comparison, nearby news, latest filing | Which potential explanations to investigate |
-| News or filing section | Stored news summaries and MD&A/risk text with quality labels | Which evidence to verify or discuss |
+| News or filing section | Selected sentences, full stored text one click away, quality labels | Which evidence to verify or discuss |
+| Shortlist button on a day | Saved days, exportable as CSV | Which days go forward for human follow-up |
 
 ## 2. Data contract
 Use the committed canonical files in `data/cleaned/` exactly as they are. **Never
@@ -56,23 +59,25 @@ summary under 300 characters); "refers to 10-K" when `risk_refers_to_10k` is tru
 Title: **Stock Movement Context Dashboard**. Subtitle: "Compare eight stocks,
 identify unusually wide daily ranges, and review related news and company filings."
 
-Layout, top to bottom: (1) period selector, (2) coverage banner, (3) eight-stock
-relative price chart, (4) eight-stock summary table, (5) stock selector and detail
-chart, (6) flagged-day table, (7) selected-day metrics and eight-stock comparison,
-(8) news and filing panels.
+Layout, top to bottom: (1) period and stock selectors, (2) coverage banner,
+(3) eight-stock relative price chart, (4) eight-stock summary table, (5) stock
+cards and detail chart, (6) flagged-day table, (7) selected-day metrics and
+eight-stock comparison, (8) news and filing panels. A separate shortlist view
+is opened from the sidebar.
 
 | State | Default | On change |
 |---|---|---|
 | Period | Full range | Keep the stock; select its largest flagged day in the new period |
 | Stock | AAPL | Select its largest flagged day in the current period |
-| Selected day | Largest `daily_range_pct` among the stock's flagged days in the period; ties → earliest date | Set by choosing one row in the flagged-day table |
+| Selected day | Largest `daily_range_pct` among the stock's flagged days in the period; ties → earliest date | Set by choosing a flagged-day row or clicking the detail chart |
 
 Opening view: full range, AAPL, selected day 2025-04-09 (range 14.44%, 8 of 8
 stocks flagged). If the stock has no flags in the period, selected day is None:
-show "No flagged trading days for this stock in the selected period.", keep the
-detail chart, and hide panels 7–8. Example: AAPL, ADBE and NVDA in 2024; NVDA and
-TSLA in 2026. The flagged-day table is the only way to select a day; there is no
-chart-point selection in the MVP.
+show "No flagged trading days for this stock in the selected period.", add
+guidance to choose another period or stock or click the chart, keep the detail
+chart, and hide panels 7–8. Example: AAPL, ADBE and NVDA in 2024; NVDA and TSLA in
+2026. Clicking the detail chart selects the nearest trading day, flagged or not;
+an unflagged selection is labelled "Not a flagged day".
 
 ## 4. Period overview
 **Period selector:** options "Full range" (default), 2024, 2025, 2026.
@@ -88,19 +93,23 @@ in every view, with ticker names in the legend and hover.
 
 **Summary table:** one row per ticker, default order as in §2, sortable:
 company, ticker, last close, change over period, flagged days, largest daily
-range, trading days. A missing value shows "Unavailable", never 0.
+range, trading days. A missing value shows "Unavailable", never 0. Clicking a row
+selects that stock.
 
 ## 5. Stock and flagged-day details
 **Stock selector:** "Select a stock to investigate"; options "Apple (AAPL)" etc.
-It does not filter the overview.
+Eight company cards (ticker, last close, flagged days) do the same job. Neither
+filters the overview.
 
 **Detail chart:** date on x, unadjusted close (USD) on y, line for the selected
-stock, distinct markers on flagged days. Hover: ticker, date, close, high, low,
-daily range, flag, co-flag count. No interpolated or invented rows.
+stock, distinct markers on flagged days; a toggle shows daily range % on y instead.
+Hover: ticker, date, close, high, low, daily range, flag, co-flag count. No
+interpolated or invented rows.
 
 **Flagged-day table:** the selected stock's flagged days in the period: date,
 close, high, low, daily range, co-flag count; sorted by range descending, then
-date ascending; single-row selection.
+date ascending; single-row selection. Caption: "Unusual compared with this stock's
+full Dec 2024–Mar 2026 history, including later days; not a real-time signal."
 
 **Selected-day metrics:** company and ticker, date, close, high, low, daily range,
 and "X of 8 stocks flagged". Below it, all eight tickers' daily range and flag
@@ -111,20 +120,30 @@ suggest shared conditions; it does not establish a market-wide cause."
 **News:** the selected stock's summaries dated D−7 through D (calendar days,
 inclusive, up to eight; weekends and earlier periods included), newest first. The
 selected day's summary is expanded; others are collapsed. Each shows its date,
-"AI-generated news summary", and "Limited information" when applicable. If none:
-"No news summaries are available for this company in the selected date window."
+"AI-generated news summary", and "Limited information" when applicable, then
+selected sentences and its full text behind an expander. If none: "No news
+summaries are available for this company in the selected date window."
 
 **Filing:** the selected stock's latest 10-K or 10-Q with filing date ≤ D (may be
-from an earlier period). Show document type and filing date; if filed on D, add
-"Filed on selected date; publication time unavailable." MD&A and Risk Factors
-each show the first ~2,000 characters, with an expander for the rest. If the
-filing is a 10-Q labelled "refers to 10-K", also show the latest 10-K's risk text
-(same display rule), labelled with its filing date. If no filing exists: "No
+from an earlier period). Show document type, filing date, and "Filed N days before
+the selected day"; if filed on D, show "Filed on selected date; publication time
+unavailable." instead. MD&A and Risk Factors each show selected sentences, with an
+expander for the full text. If the filing is a 10-Q labelled "refers to 10-K", also
+show the latest 10-K's risk text (same display rule), labelled with its filing date. If no filing exists: "No
 eligible 10-K or 10-Q filing is available for this company as of the selected
 date." Filing text is excerpted from the filings, not the complete documents.
 
-Render all stored news and filing text as plain text so `$` amounts display
-literally (Markdown would treat text between two `$` as math).
+**Selected sentences** are complete sentences copied from the stored text by topic
+keywords (`web/summaries.js`), headed "Selected sentences · not a summary". They
+are not ranked by importance and generate no new claims.
+
+**Shortlist:** a button saves the selected day in the browser (`localStorage`). The
+shortlist view lists saved days, reopens one, removes one, or exports all as CSV:
+symbol, date, close, high, low, daily range, stocks flagged that day, latest filing
+type and date, review status.
+
+Render all stored news and filing text as plain, escaped text so `$` amounts and
+symbols display literally.
 
 ## 7. Metrics
 Backend ratios are decimals; the interface formats them once as percentages with
@@ -142,6 +161,7 @@ decimals, counts as integers.
 | Co-flags — did many stocks swing together? | Stored `co_flag_count` | All eight stocks on a date; never filtered |
 | News window | Same symbol, `D − 7 ≤ date ≤ D` | Any period |
 | Filing context | Latest filing with `date ≤ D`, same symbol | Any period |
+| Filing age — how old is the filing shown? | Calendar days from filing `date` to D | One filing, one day |
 
 Period changes use adjusted prices at both ends; the last close is the unadjusted
 quote. Daily range measures the intraday swing, not direction or a close-to-close
@@ -160,13 +180,21 @@ tickers raise `ValueError`.
 | `data_loader.py` | Load and validate the four canonical files | Dict of DataFrames |
 | `analysis.py` | Filtering, aggregation and context lookup | Values and DataFrames below |
 | `phase2.py` | Validate, then export all backend tables | `outputs/analysis/` (git-ignored) |
-| `charts.py`, `app.py` (Phase 3) | Plotly figures; Streamlit controls, state, layout | Interface |
+| `export_web.py` | Run the backend and write everything the site shows | `web/data.js` |
+| `web/charts.js` | Draw the SVG charts it is given | Chart elements |
+| `web/summaries.js` | Pick sentences from stored text | Selected sentences |
+| `web/app.js`, `web/index.html`, `web/style.css` | Controls, state, layout, formatting | Interface |
+| `app.py` | Serve `web/` locally | Local preview |
 
 The validator recomputes the stored news and filing links by calling
 `cleaning.build_price_context`, so it checks that the stored data matches the
 cleaning logic, not that the logic itself is right (the tests cover that).
 `cleaning.py` keeps its own copy of the ticker set so it can run as a standalone
 script; a test checks it equals `constants.COMPANIES`.
+
+The browser never computes flags, co-flags, rankings, news windows, or filing
+lookups: it looks them up in `web/data.js`. A test checks the committed file matches
+a fresh export, so rerun `export_web` after any data or backend change.
 
 `period` is `'full'` or a year from `YEARS`; `date` is any date-like value.
 
@@ -183,24 +211,25 @@ script; a test checks it equals `constants.COMPANIES`.
 | `date_comparison(context, date)` | DataFrame, 8 rows in ticker order: symbol, daily_range_pct, is_flagged, co_flag_count (NaN when no trading that date) |
 | `news_context(news, symbol, date)` | DataFrame: id, symbol, date, highlights, highlights_low_info; newest first |
 | `filing_context(filings, symbol, date)` | dict: `filing` and `annual_risk_fallback` (each a dict with id, symbol, date, document_type, mda_content, risk_content, risk_refers_to_10k, or None), `filed_same_day` (bool) |
+| `filing_age_days(filing_date, date)` | int: calendar days from the filing to the date (0 = same day) |
 
 ## 9. Technical choices
 Python 3.13 with pandas and pyarrow, managed by `uv` (`pyproject.toml`, `uv.lock`).
 The tables are small enough to keep in memory; no database or AI API is needed.
-Phase 3 adds Streamlit and Plotly with `uv add streamlit plotly` (pinned in
-`uv.lock`); the flagged-day table needs Streamlit's single-row dataframe selection.
-Load the data once with `st.cache_data`, keyed on each file's path, size and
-modification time. Keep long text in `news` and `filings` and look it up by id or
-date; never copy it into `price_context`.
+The interface is a static HTML, CSS and JavaScript site with no build step and no
+server-side code: Python produces every figure ahead of time, so the page loads
+once and then responds instantly. Keep long text in `news` and `filings` and look
+it up by id; never copy it into `price_context`.
 
-The MVP runs locally with `uv run streamlit run app.py`. Later deployment can use
-a hosted Streamlit service that reads the committed `data/cleaned/` files.
+The MVP runs locally with `python app.py`. Deployment is any static host serving
+the `web/` folder, such as Vercel.
 
 Commands (project root; macOS needs `PYTHONPATH=src` because Python 3.13 ignores
 the hidden editable-install `.pth` file):
 ```bash
 PYTHONPATH=src uv run python -m unittest discover -s tests -v
 PYTHONPATH=src uv run python -m dso576_python.phase2
+PYTHONPATH=src uv run python -m dso576_python.export_web
 ```
 
 ## 10. Data limitations
@@ -211,11 +240,12 @@ every observation, imputed nothing, and removed no extremes.
 
 ## 11. Build order and acceptance
 Done in Phase 2: canonical data on `main`, backend, tests. Phase 3 build order:
-1. `uv add streamlit plotly`; load data through `load_cleaned` with caching.
+1. `export_web.py` writes `web/data.js` through the tested backend.
 2. Period selector, coverage banner, relative price chart, summary table.
 3. Stock selector, detail chart, flagged-day table with selection state.
 4. Selected-day metrics, eight-stock comparison, news and filing panels.
-5. Check every item below.
+5. Shortlist and CSV export.
+6. Check every item below.
 
 Acceptance checks:
 - Opens on full range, AAPL, 2025-04-09; every company shows 17 flagged days.
@@ -224,7 +254,8 @@ Acceptance checks:
 - NVDA in 2026 shows the no-flags message and hides panels 7–8.
 - Flagged-day order, default selections and tie-breaks match `flagged_days` / `initial_date`.
 - Co-flag count always covers all eight stocks; legend toggles never change metrics.
-- News window is D−7..D; no filing dated after D; same-day label; 10-K risk shown for "refers to 10-K" 10-Qs.
-- Filing text shows ~2,000 characters plus an expander; `$` amounts display literally.
+- News window is D−7..D; no filing dated after D; same-day label or filing age shown; 10-K risk shown for "refers to 10-K" 10-Qs.
+- Filing text shows selected sentences plus an expander for the full text; `$` amounts display literally.
+- A saved day appears in the shortlist, reopens correctly, and exports to CSV.
 - Unknown values show "Unavailable", never 0; empty states show their messages.
-- `PYTHONPATH=src uv run python -m unittest discover -s tests -v` passes and the backend imports without Streamlit.
+- `PYTHONPATH=src uv run python -m unittest discover -s tests -v` passes, including the check that `web/data.js` matches a fresh export.

@@ -99,6 +99,12 @@ def news_context(news, symbol, date):
         'date', ascending=False).reset_index(drop=True)
 
 
+def filing_age_days(filing_date, date):
+    """Calendar days from a filing to the selected day (0 means filed that day)."""
+    day = pd.Timestamp(date).normalize()
+    return (day - pd.Timestamp(filing_date).normalize()).days
+
+
 def filing_context(filings, symbol, date):
     """As-of filing and optional annual risk fallback. Ties fail explicitly."""
     _symbol(symbol)
