@@ -37,7 +37,7 @@ def main():
                 raise SystemExit('Source access required. Accept dataset conditions on Hugging Face and set HF_TOKEN, or place the three pinned Parquet files in data/raw/. No token was printed.') from None
             raise SystemExit(f'Source HTTP error {error.code}; no files substituted.') from None
         except urllib.error.URLError:
-            raise SystemExit('Source network request failed; use the pinned local files described in README.md.') from None
+            raise SystemExit('Source network request failed; use the pinned local files described in docs/data_and_pipeline.md.') from None
         if hashlib.sha256(content).hexdigest() != expected:
             raise SystemExit(f'{table}: checksum mismatch; refusing changed source')
         temporary = path.with_suffix('.part')

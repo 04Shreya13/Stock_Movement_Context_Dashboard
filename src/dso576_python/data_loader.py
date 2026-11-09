@@ -94,7 +94,7 @@ def load_cleaned(directory='data/cleaned', strict_source=True):
     root = Path(directory)
     missing = [str(root / f'{name}.parquet') for name in REQUIRED if not (root / f'{name}.parquet').exists()]
     if missing:
-        raise FileNotFoundError('Missing canonical files: ' + ', '.join(missing) + '. See README.md; sample CSVs cannot replace these files.')
+        raise FileNotFoundError('Missing canonical files: ' + ', '.join(missing) + '. See docs/data_and_pipeline.md; sample CSVs cannot replace these files.')
     data = {name: pd.read_parquet(root / f'{name}.parquet') for name in REQUIRED}
     validate_data(data, strict_source=strict_source)
     return data
